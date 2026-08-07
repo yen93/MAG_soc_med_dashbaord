@@ -1,0 +1,123 @@
+{
+  "meta": {
+    "brand": "My Adventure Group",
+    "dashboardTitle": "MAG Social Health Score",
+    "isPlaceholderData": true,
+    "placeholderNote": "All numbers below are realistic PLACEHOLDER values for first-run testing. Replace every field under each channel's \"raw\" object with real numbers pulled from that platform's own analytics/insights, then update \"lastUpdated\" and append a new entry to \"history\"."
+  },
+  "channels": {
+    "instagram": {
+      "platform": "Instagram",
+      "handle": "@myadventuregroup",
+      "url": "https://www.instagram.com/myadventuregroup/",
+      "lastUpdated": "2026-08-01",
+      "raw": {
+        "_comment": "PLACEHOLDER — replace with real numbers from Instagram Insights",
+        "followers": 4820,
+        "followersPrevPeriod": 4650,
+        "avgLikesPerPost": 68,
+        "avgCommentsPerPost": 5,
+        "postsLast30Days": 7,
+        "videoPostsLast30Days": 3,
+        "bioFilled": true,
+        "linkInBio": true,
+        "profilePicSet": true,
+        "categorySet": true,
+        "visualConsistencyScore": 70,
+        "commentReplyRatePct": 45,
+        "hashtagsAvgPerPost": 9,
+        "hashtagStrategyScore": 55
+      },
+      "history": [
+        { "date": "2026-03-01", "score": 57 },
+        { "date": "2026-04-01", "score": 59 },
+        { "date": "2026-05-01", "score": 61 },
+        { "date": "2026-06-01", "score": 62 },
+        { "date": "2026-07-01", "score": 64 },
+        { "date": "2026-08-01", "score": 65 }
+      ]
+    },
+    "website": {
+      "platform": "Website",
+      "handle": "myadventuregroup.com.au",
+      "url": "https://www.myadventuregroup.com.au/",
+      "lastUpdated": "2026-08-01",
+      "raw": {
+        "_comment": "PLACEHOLDER — replace with real numbers from PageSpeed/Lighthouse + a manual site audit",
+        "performanceScore": 78,
+        "titleTagsPresentPct": 85,
+        "altTextCoveragePct": 60,
+        "mobileFriendly": true,
+        "lastContentUpdateDate": "2026-05-20",
+        "ctaClarityScore": 72,
+        "bookingPathClicks": 2,
+        "testimonialsVisible": true,
+        "mediaLogosVisible": true,
+        "caseStudiesVisible": false
+      },
+      "history": [
+        { "date": "2026-03-01", "score": 66 },
+        { "date": "2026-04-01", "score": 67 },
+        { "date": "2026-05-01", "score": 69 },
+        { "date": "2026-06-01", "score": 70 },
+        { "date": "2026-07-01", "score": 71 },
+        { "date": "2026-08-01", "score": 72 }
+      ]
+    },
+    "facebook": {
+      "platform": "Facebook",
+      "handle": "MyAdventureGroup",
+      "url": "https://www.facebook.com/MyAdventureGroup",
+      "lastUpdated": "2026-08-01",
+      "raw": {
+        "_comment": "PLACEHOLDER — replace with real numbers from Facebook Page Insights",
+        "followers": 3100,
+        "followersPrevPeriod": 3050,
+        "aboutFilled": true,
+        "contactInfoFilled": true,
+        "hoursSetIfRelevant": null,
+        "postsLast30Days": 4,
+        "avgReactionsPerPost": 18,
+        "avgCommentsPerPost": 2,
+        "avgSharesPerPost": 1,
+        "reviewsEnabled": true,
+        "ratingOutOf5": 4.6,
+        "responseRatePct": 80
+      },
+      "history": [
+        { "date": "2026-03-01", "score": 52 },
+        { "date": "2026-04-01", "score": 53 },
+        { "date": "2026-05-01", "score": 55 },
+        { "date": "2026-06-01", "score": 54 },
+        { "date": "2026-07-01", "score": 56 },
+        { "date": "2026-08-01", "score": 57 }
+      ]
+    },
+    "linkedin": {
+      "platform": "LinkedIn",
+      "handle": "myadventure-group",
+      "url": "https://www.linkedin.com/company/myadventure-group/posts/?feedView=all",
+      "lastUpdated": "2026-08-01",
+      "raw": {
+        "_comment": "PLACEHOLDER — replace with real numbers from LinkedIn Page analytics",
+        "followers": 2600,
+        "followersPrevPeriod": 2400,
+        "aboutFilled": true,
+        "industrySet": true,
+        "bannerLogoSet": true,
+        "postsLast30Days": 6,
+        "avgReactionsPerPost": 32,
+        "avgCommentsPerPost": 3,
+        "contentRelevanceScore": 65
+      },
+      "history": [
+        { "date": "2026-03-01", "score": 60 },
+        { "date": "2026-04-01", "score": 62 },
+        { "date": "2026-05-01", "score": 63 },
+        { "date": "2026-06-01", "score": 65 },
+        { "date": "2026-07-01", "score": 67 },
+        { "date": "2026-08-01", "score": 69 }
+      ]
+    }
+  }
+}

@@ -1,0 +1,163 @@
+================================================================================
+MAG SOCIAL HEALTH SCORE DASHBOARD — AS-BUILT DOCUMENTATION
+================================================================================
+Repo:        C:\Users\Cloverly\claude_code\soc_med_dashbaord
+Documented:  2026-08-07
+System type: Static, no-build client-side web dashboard (HTML/CSS/vanilla JS
+             ES modules). No server, no framework, no bundler.
+
+--------------------------------------------------------------------------------
+1. PURPOSE
+--------------------------------------------------------------------------------
+Scores My Adventure Group's (MAG) four public-facing channels — Instagram,
+Website, Facebook, LinkedIn — on a 0-100 "health score" each, rolled up into
+one overall MAG Social Health Score, with a per-channel category breakdown,
+auto-generated strengths/gaps summary, recommendations, and a 6-month
+sparkline history.
+
+--------------------------------------------------------------------------------
+2. FILE MAP
+--------------------------------------------------------------------------------
+index.html              Page shell. Renders a fixed "scanning" overlay
+                         (#scan-overlay) on load, a hidden <main id="app">,
+                         and loads js/app.js as an ES module.
+
+css/styles.css          All styling: CSS custom-property design tokens
+                         (--color-primary, --color-accent, grade colors),
+                         scan-overlay animation states, hero layout with an
+                         SVG gauge, responsive channel-card grid, category
+                         progress bars, sparkline container, footer.
+
+js/scoring.js           Pure scoring engine, no DOM/IO. Exports:
+                           - CHANNEL_WEIGHTS, {INSTAGRAM,WEBSITE,FACEBOOK,
+                             LINKEDIN}_WEIGHTS, BENCHMARKS, GRADE_BANDS
+                             (all named constants, tunable without touching
+                             formulas)
+                           - gradeFor(score) -> {min,label,className}
+                           - computeAllScores(metrics) -> full view model
+                             { magOverall, magGrade, channels: {...} }
+                         Internals: weightedAverage() skips null sub-scores
+                         and renormalizes remaining weights (a channel
+                         missing one input, e.g. FB reviews disabled, isn't
+                         penalized or faked); rateScore() linearly scales a
+                         raw metric against a benchmark target; growthScore()
+                         maps % follower change to a 0-100 score centered on
+                         50 at 0% growth; freshnessScore() maps days-since-
+                         update to 0-100 between two day thresholds;
+                         bookingPathScore() penalizes each extra click to
+                         book/contact. buildInsights() auto-writes the
+                         "what's strong / what needs work" summary and up to
+                         3 recommendation lines from each channel's two
+                         lowest-scoring categories, using per-category
+                         template strings that interpolate real numbers from
+                         metrics.json (e.g. "Posting cadence is light (4
+                         posts in 30 days)...").
+
+data/metrics.json       Raw input data, hand-maintained. One object per
+                         channel: {platform, handle, url, lastUpdated,
+                         raw: {...channel-specific fields...}, history: [
+                         {date, score}, ...]}. meta.isPlaceholderData is
+                         currently TRUE — every raw value in this file is a
+                         realistic placeholder for first-run testing, not a
+                         real pull from Instagram/Meta/LinkedIn analytics.
+
+js/app.js                *** REFERENCED BY index.html BUT NOT PRESENT ***
+                         See "Known issues" below — this is the piece that
+                         is supposed to fetch data/metrics.json, call
+                         computeAllScores(), render the gauge/cards/
+                         sparklines into #app, and hide #scan-overlay. It
+                         does not currently exist in this repo.
+
+package.json             { "type": "module" } only, so Node treats
+                         js/scoring.js as an ES module for local testing.
+                         Explicitly not required to host the site — there is
+                         no build step and no runtime dependency list
+                         (no node_modules, no lockfile).
+
+.claude/settings.local.json   Local Claude Code permission allow-list
+                         (WebFetch domains used while researching MAG's real
+                         site and a reference audit tool). Not part of the
+                         application; excluded from version control via
+                         .gitignore.
+
+--------------------------------------------------------------------------------
+3. SCORING MODEL (as implemented in js/scoring.js)
+--------------------------------------------------------------------------------
+Channel weights (equal, 25% each): Instagram, Website, Facebook, LinkedIn.
+
+Instagram categories & weights:
+  Profile Completeness 15% | Content Quality & Consistency 25% |
+  Engagement 30% | Growth 15% | Hashtag & Discoverability 15%
+
+Website categories & weights:
+  Performance 20% | SEO Basics 20% | Content Freshness 15% |
+  Conversion Clarity 25% | Trust Signals 20%
+
+Facebook categories & weights:
+  Page Completeness 20% | Posting Consistency 20% | Engagement Rate 30% |
+  Review Rating 15% | Response Rate 15%
+
+LinkedIn categories & weights:
+  Company Page Completeness 20% | Posting Consistency 15% |
+  Engagement Rate 30% | Follower Growth 15% | Content Relevance Mix 20%
+
+Benchmarks driving the linear rate scores (BENCHMARKS in scoring.js):
+  Instagram: 12 posts/mo, 50% video mix, 6% engagement rate, 15 hashtags/post
+  Facebook:  8 posts/mo, 1% engagement rate
+  LinkedIn:  8 posts/mo, 2% engagement rate
+  Website:   full freshness score within 30 days, zero after 180 days
+
+Grade bands (identical thresholds for every channel and the overall score):
+  90-100  Excellent   75-89  Good   50-74  Needs Work   0-49  At Risk
+  (missing/NaN score -> "No Data")
+
+--------------------------------------------------------------------------------
+4. HOW TO RUN LOCALLY
+--------------------------------------------------------------------------------
+This is a static site with an ES module entry point, so it must be served
+over http(s) — opening index.html directly via file:// will not load the
+module script in most browsers. From this folder:
+  npx serve .        (or any other static file server)
+then open the printed localhost URL.
+NOTE: this will currently show the scan overlay indefinitely and never
+render the dashboard — see Known Issues, item 1.
+
+To point the dashboard at real numbers: replace every field under each
+channel's "raw" object in data/metrics.json with the real value from that
+platform's own analytics (Instagram Insights, Facebook Page Insights,
+LinkedIn Page analytics, PageSpeed/Lighthouse + manual audit for the
+website), update "lastUpdated", and append a new {date, score} entry to
+"history".
+
+--------------------------------------------------------------------------------
+5. KNOWN ISSUES / GAPS (as found 2026-08-07)
+--------------------------------------------------------------------------------
+1. js/app.js is missing. index.html loads it as the page's only script, and
+   nothing else in the repo fetches data/metrics.json, calls
+   computeAllScores(), or renders into #app / hides #scan-overlay. As
+   committed, the dashboard displays the "scanning" overlay and never
+   progresses. This is the single blocking defect preventing the app from
+   working end to end.
+2. data/metrics.json is entirely placeholder data (meta.isPlaceholderData:
+   true) — none of the numbers are pulled from real analytics yet.
+3. No automated tests exist for the scoring functions in js/scoring.js,
+   despite them being pure and straightforward to unit test.
+4. No README in the repo describing setup/run steps (this as-built file and
+   the inline code comments are currently the only documentation).
+5. This repo's git history starts with the initial commit that added this
+   as-built file — no prior version history exists for the files above,
+   which were authored in an earlier working session.
+
+--------------------------------------------------------------------------------
+6. RELATED BUT SEPARATE ARTIFACT
+--------------------------------------------------------------------------------
+In the conversation that produced update_logs/070826_1.txt, a visually
+distinct single-file HTML mockup ("MAG Social & Web Health Report", an
+expedition/field-audit themed report with its own hand-set placeholder
+scores: Website 84, Instagram 79, Facebook 61, LinkedIn 46, composite 68)
+was designed and published as a Claude Artifact (a hosted page on
+claude.ai, not part of this repo). It is a different, one-off visual
+treatment of the same brief and is not wired to js/scoring.js or
+data/metrics.json — do not confuse its scores with this app's scoring
+model output. It is not included in this repository.
+================================================================================

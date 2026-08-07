@@ -1,0 +1,113 @@
+================================================================================
+UPDATE LOG — 07/08/26 (#1)
+Conversation window summary: MAG Social & Web Health dashboard
+================================================================================
+
+REQUEST
+-------
+Build a website dashboard similar to a reference tool
+(howtfdoigrowmyigimat2000followers.com/report/myadventuregroup) that displays
+My Adventure Group's (MAG) "health score" across its listed socials:
+  - Instagram: https://www.instagram.com/myadventuregroup/
+  - Website:   https://www.myadventuregroup.com.au/
+  - Facebook:  https://www.facebook.com/MyAdventureGroup
+  - LinkedIn:  https://www.linkedin.com/company/myadventure-group/posts/?feedView=all
+
+RESEARCH PERFORMED
+-------------------
+- Fetched the reference report URL twice (initial page + a sample report at
+  /report/itssukhpalsaini). Both times the tool only returned an in-progress
+  "Scanning @handle... 1/5" client-side animation state (steps: checking
+  profile, looking at posts, reading comments, looking at website, scoring
+  profile) — the finished report layout could not be captured this way since
+  it renders after a client-side JS sequence completes, which a one-shot page
+  fetch does not wait for.
+- Fetched myadventuregroup.com.au directly: confirmed brand (corporate
+  speaking / adventure-based team development, founder James Castrission,
+  Guinness World Record holder / explorer), tagline, dedicated landing pages
+  for 6 Australian cities, and a "980,000 people / 40 countries" credibility
+  stat.
+- Fetched instagram.com/myadventuregroup directly: obtained follower count
+  (~1,840-1,879 depending on source), following (~907-919), post count
+  (1,078), bio text, and 10 story-highlight categories.
+- Facebook and LinkedIn pages could not be fetched directly (Facebook content
+  truncated / LinkedIn redirected to its login wall for a logged-out fetch).
+- Used web search to fill the gap: Facebook page ~1,430 likes / ~1.4K
+  followers (Blackheath NSW); LinkedIn company page ~305 followers,
+  industry "Professional Training & Coaching".
+
+DELIVERABLE PRODUCED THIS SESSION
+-----------------------------------
+A single self-contained HTML page, "MAG Social & Web Health Report", designed
+from scratch (not a copy of the reference tool's exact layout, since its
+finished design was never observed — see Research above) and published as a
+Claude Artifact (hosted on claude.ai, NOT committed into this repository).
+
+Design approach:
+  - Visual identity: "field audit / expedition dashboard", tying into James
+    Castrission's explorer background (compass mark, route-note numbered
+    recommendations, dashed "trail" section rule).
+  - Typography: Big Shoulders Display (headings/scores) + Work Sans (body),
+    both downloaded from Google Fonts and inlined as base64 @font-face data
+    URIs so the artifact renders correctly under the platform's content
+    security policy (no external font requests). Injected via a short Python
+    substitution script rather than pasting the ~115KB of base64 through the
+    chat, to avoid bloating the conversation.
+  - Score gauges: pure CSS conic-gradient rings (270° arc, dial pattern) —
+    no JS or hand-authored SVG paths needed.
+  - Palette: dark "glacier navy" theme by default with a light theme
+    override (both themes token-driven via CSS custom properties), ice-blue
+    accent kept separate from semantic status colors (green/amber/red).
+
+Scores shown on the published artifact (hand-derived from the public data
+above, NOT run through this repo's js/scoring.js engine or data/metrics.json
+— see as_built.txt section 6 for why these two are separate):
+  Website    84 / 100  (Solid)
+  Instagram  79 / 100  (Solid)
+  Facebook   61 / 100  (Steady)
+  LinkedIn   46 / 100  (At risk)
+  Composite  68 / 100  (Steady)
+
+Each channel card includes 4 category sub-scores, a "takeaway" line, and the
+page ends with a prioritized "Route notes" recommendation list (fix the
+website's LinkedIn icon — it links to James's personal profile instead of
+the Company Page; rebuild the LinkedIn presence; add a Facebook cross-post
+habit; convert stage reach into Instagram follower growth) plus a
+methodology section disclosing that all scores are estimated from public,
+logged-out signals captured 2026-08-07 — not private platform analytics.
+
+DISCOVERY MADE THIS SESSION
+-----------------------------
+While carrying out this turn's follow-up requests, found that this repo
+(C:\Users\Cloverly\claude_code\soc_med_dashbaord) already contained a
+separate, more built-out implementation from an earlier working session
+(index.html, css/styles.css, js/scoring.js, data/metrics.json,
+package.json — all dated 2026-08-06): a real weighted scoring engine driven
+by a metrics.json data file, distinct from the artifact above. That system
+is documented in full in update_logs/as_built.txt, including a defect found
+during review: index.html loads js/app.js as its only script, but that file
+does not exist in the repo, so the dashboard cannot currently render past
+its loading/scanning overlay.
+
+THIS TURN'S FOLLOW-UP ACTIONS
+--------------------------------
+1. Reviewed the existing repo contents (index.html, css/styles.css,
+   js/scoring.js, data/metrics.json, package.json, .claude/settings.local.json)
+   to write an accurate as-built record.
+2. Wrote update_logs/as_built.txt — full documentation of the existing
+   system as found, including the missing-js/app.js defect and the
+   distinction from this session's separate Claude Artifact.
+3. Wrote this file, update_logs/070826_1.txt.
+4. Initialized git in this folder, added a .gitignore (excludes
+   .claude/settings.local.json), committed the existing project files plus
+   both new log files, and pushed to
+   https://github.com/yen93/MAG_soc_med_dashbaord (previously empty repo).
+
+OPEN ITEM FOR NEXT SESSION
+-----------------------------
+js/app.js still needs to be written (fetch data/metrics.json -> call
+computeAllScores() from js/scoring.js -> render gauge/cards/sparklines into
+#app -> hide #scan-overlay) before this repo's dashboard will actually
+display anything. Not written in this session because it wasn't part of the
+requested scope (as-built doc + update log + push only).
+================================================================================

@@ -1,0 +1,6 @@
+{
+  "name": "mag-social-health-score",
+  "private": true,
+  "type": "module",
+  "description": "Static dashboard — no build step. package.json exists only so Node treats js/scoring.js as an ES module for local testing; it is not required to host the site."
+}
