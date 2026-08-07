@@ -61,12 +61,24 @@ data/metrics.json       Raw input data, hand-maintained. One object per
                          realistic placeholder for first-run testing, not a
                          real pull from Instagram/Meta/LinkedIn analytics.
 
-js/app.js                *** REFERENCED BY index.html BUT NOT PRESENT ***
-                         See "Known issues" below — this is the piece that
-                         is supposed to fetch data/metrics.json, call
-                         computeAllScores(), render the gauge/cards/
-                         sparklines into #app, and hide #scan-overlay. It
-                         does not currently exist in this repo.
+js/app.js                Entry point loaded by index.html. Drives the
+                         #scan-overlay step animation (respects
+                         prefers-reduced-motion by skipping straight to the
+                         end state), wires the #scan-skip button, fetches
+                         data/metrics.json, calls computeAllScores(), and
+                         renders the hero gauge, four channel cards
+                         (icon/handle, gauge, grade badge, category bars via
+                         gradeFor() per category, auto-generated
+                         summary/recommendations, a month-over-month trend
+                         line, an SVG sparkline from each channel's
+                         "history" array, and a footer with last-updated
+                         date + a link to the live channel) into #app. Falls
+                         back to a .data-error panel if the fetch fails or
+                         the JSON is malformed. All gauge/sparkline color
+                         classes (stroke-excellent, cat-fill.good, etc.) are
+                         derived from gradeFor()'s className so channel
+                         cards and category bars use the same 4-band
+                         color language as the hero score.
 
 package.json             { "type": "module" } only, so Node treats
                          js/scoring.js as an ES module for local testing.
@@ -130,18 +142,23 @@ website), update "lastUpdated", and append a new {date, score} entry to
 "history".
 
 --------------------------------------------------------------------------------
-5. KNOWN ISSUES / GAPS (as found 2026-08-07)
+5. KNOWN ISSUES / GAPS (as found 2026-08-07, updated same day once js/app.js
+   was written and verified)
 --------------------------------------------------------------------------------
-1. js/app.js is missing. index.html loads it as the page's only script, and
-   nothing else in the repo fetches data/metrics.json, calls
-   computeAllScores(), or renders into #app / hides #scan-overlay. As
-   committed, the dashboard displays the "scanning" overlay and never
-   progresses. This is the single blocking defect preventing the app from
-   working end to end.
+1. [RESOLVED 2026-08-07] js/app.js was missing at initial review — index.html
+   loaded it as the page's only script, and nothing else in the repo fetched
+   data/metrics.json or rendered into #app, so the dashboard never
+   progressed past the scanning overlay. js/app.js has since been written
+   (see section 2 above) and verified end to end with a headless-browser
+   pass: page loads -> scan overlay animates -> Skip button dismisses it on
+   click -> hero + all 4 channel cards render with real category bars,
+   summaries, recommendations and sparklines -> zero console/page errors.
 2. data/metrics.json is entirely placeholder data (meta.isPlaceholderData:
    true) — none of the numbers are pulled from real analytics yet.
 3. No automated tests exist for the scoring functions in js/scoring.js,
-   despite them being pure and straightforward to unit test.
+   despite them being pure and straightforward to unit test. (js/app.js's
+   rendering logic was verified manually via a headless-browser pass rather
+   than an automated test suite — no test framework is set up in this repo.)
 4. No README in the repo describing setup/run steps (this as-built file and
    the inline code comments are currently the only documentation).
 5. This repo's git history starts with the initial commit that added this
