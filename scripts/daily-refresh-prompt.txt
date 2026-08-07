@@ -1,0 +1,16 @@
+You're running the daily data-refresh half of the MAG Social Health dashboard's automation (My Adventure Group). You are already in the repo root (C:\Users\Cloverly\claude_code\soc_med_dashbaord). This local environment can reach the internet and push to GitHub, but does NOT have the Artifact-publishing tool available (confirmed in an earlier run) — do not attempt to call it. A separate cloud routine handles publishing the Claude Artifact once this job has pushed fresh data. Do the following steps in order, and finish with a clear structured report — do not silently swallow any failure or guess at causes.
+
+1. Run `node scripts/update-metrics.mjs` from the repo root. This re-fetches Instagram/Facebook/LinkedIn follower counts from their public pages and updates data/metrics.json with real data, including a 30-day-lookback growth calculation and recomputed scores via js/scoring.js. It prints a JSON report of what it fetched and any per-channel errors — capture that output verbatim.
+
+2. Run `node scripts/build-artifact.mjs` from the repo root. This regenerates artifact/mag-health-report.html from the now-updated data/metrics.json using the real scoring engine. It prints a one-line summary — capture it.
+
+3. Check `git status` first. If update-metrics.mjs and build-artifact.mjs produced no changes (e.g. all fetches failed, or today's numbers are identical to what's already committed), skip the commit/push and say so explicitly rather than creating an empty commit. Otherwise:
+   git add -A
+   git commit -m "Daily metrics refresh: <today's date, YYYY-MM-DD>"
+   git push origin main
+   Report explicitly whether this succeeded or failed, and the exact error message if it failed.
+
+4. Finish with a short structured summary in exactly this shape:
+   - Metrics fetch: succeeded/partially succeeded/failed — what was fetched per channel, and any errors
+   - Git push: succeeded/failed/skipped — reason
+   - Today's real scores: MAG overall, and each of Website/Instagram/Facebook/LinkedIn (score and grade)
