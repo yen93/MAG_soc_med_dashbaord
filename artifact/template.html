@@ -1,0 +1,470 @@
+<meta charset="utf-8" />
+<title>MAG Social &amp; Web Health Report</title>
+<meta name="description" content="A field audit of My Adventure Group's public channels: Instagram, Facebook, LinkedIn and the website, each scored against publicly visible signals." />
+<style>
+  @font-face {
+    font-family: 'Big Shoulders Display';
+    font-style: normal;
+    font-weight: 700 800;
+    font-display: swap;
+    src: url(data:font/woff2;base64,__BSD_FONT_BASE64__) format('woff2');
+  }
+  @font-face {
+    font-family: 'Work Sans';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url(data:font/woff2;base64,__WORKSANS_FONT_BASE64__) format('woff2');
+  }
+
+  :root {
+    --surface-0: #0B1220;
+    --surface-1: #121B2E;
+    --surface-2: #1B2740;
+    --surface-3: #24314D;
+    --border: #283A5B;
+    --text-primary: #EDF1F7;
+    --text-secondary: #9FB0C9;
+    --text-muted: #6B7A94;
+    --accent: #52BCEE;
+    --accent-strong: #79CCF3;
+    --accent-soft: rgba(82, 188, 238, 0.14);
+    --good: #34CB8B;
+    --good-soft: rgba(52, 203, 139, 0.14);
+    --warning: #F0AC43;
+    --warning-soft: rgba(240, 172, 67, 0.14);
+    --critical: #F1615C;
+    --critical-soft: rgba(241, 97, 92, 0.14);
+    --shadow: 0 20px 44px rgba(4, 8, 18, 0.38);
+    --font-display: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
+    --font-body: 'Work Sans', -apple-system, 'Segoe UI', sans-serif;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --surface-0: #EEF2F6;
+      --surface-1: #FFFFFF;
+      --surface-2: #E6ECF2;
+      --surface-3: #DAE2EB;
+      --border: #CBD6E2;
+      --text-primary: #101826;
+      --text-secondary: #45536A;
+      --text-muted: #76839A;
+      --accent: #1782AE;
+      --accent-strong: #106589;
+      --accent-soft: rgba(23, 130, 174, 0.10);
+      --good: #1B9A66;
+      --good-soft: rgba(27, 154, 102, 0.10);
+      --warning: #B87615;
+      --warning-soft: rgba(184, 118, 21, 0.10);
+      --critical: #D33B36;
+      --critical-soft: rgba(211, 59, 54, 0.10);
+      --shadow: 0 16px 32px rgba(16, 24, 38, 0.08);
+    }
+  }
+  :root[data-theme="dark"] {
+    --surface-0: #0B1220; --surface-1: #121B2E; --surface-2: #1B2740; --surface-3: #24314D;
+    --border: #283A5B; --text-primary: #EDF1F7; --text-secondary: #9FB0C9; --text-muted: #6B7A94;
+    --accent: #52BCEE; --accent-strong: #79CCF3; --accent-soft: rgba(82, 188, 238, 0.14);
+    --good: #34CB8B; --good-soft: rgba(52, 203, 139, 0.14);
+    --warning: #F0AC43; --warning-soft: rgba(240, 172, 67, 0.14);
+    --critical: #F1615C; --critical-soft: rgba(241, 97, 92, 0.14);
+    --shadow: 0 20px 44px rgba(4, 8, 18, 0.38);
+  }
+  :root[data-theme="light"] {
+    --surface-0: #EEF2F6; --surface-1: #FFFFFF; --surface-2: #E6ECF2; --surface-3: #DAE2EB;
+    --border: #CBD6E2; --text-primary: #101826; --text-secondary: #45536A; --text-muted: #76839A;
+    --accent: #1782AE; --accent-strong: #106589; --accent-soft: rgba(23, 130, 174, 0.10);
+    --good: #1B9A66; --good-soft: rgba(27, 154, 102, 0.10);
+    --warning: #B87615; --warning-soft: rgba(184, 118, 21, 0.10);
+    --critical: #D33B36; --critical-soft: rgba(211, 59, 54, 0.10);
+    --shadow: 0 16px 32px rgba(16, 24, 38, 0.08);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    background: var(--surface-0);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { padding: clamp(20px, 5vw, 64px) 0 80px; overflow-x: hidden; }
+  a { color: var(--accent-strong); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; position: relative; }
+
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 800; text-wrap: balance; letter-spacing: 0.2px; margin: 0; }
+  .eyebrow {
+    font-family: var(--font-body); font-weight: 700; font-size: 12px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent-strong); display: flex; align-items: center; gap: 8px;
+  }
+  .tabular { font-variant-numeric: tabular-nums; }
+
+  /* ---------- header ---------- */
+  header.top { position: relative; padding-bottom: 28px; }
+  .brandline { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+  .compass { width: 26px; height: 26px; flex: none; }
+  h1.title { font-size: clamp(28px, 4.4vw, 44px); line-height: 1.05; margin-top: 10px; max-width: 20ch; }
+  .subtitle { color: var(--text-secondary); font-size: 16px; margin-top: 12px; max-width: 62ch; }
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 18px; font-size: 13px; color: var(--text-muted);
+  }
+  .meta-row span { display: flex; align-items: center; gap: 6px; }
+  .meta-row .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--text-muted); }
+
+  /* ---------- hero score ---------- */
+  .hero {
+    position: relative; margin-top: 34px; padding: 32px clamp(18px, 4vw, 40px);
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 18px;
+    box-shadow: var(--shadow); overflow: hidden;
+    display: grid; grid-template-columns: auto 1fr; gap: clamp(20px, 4vw, 48px); align-items: center;
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: -20% -10% auto -10%; height: 260px; pointer-events: none;
+    background: radial-gradient(ellipse 60% 100% at 30% 0%, var(--accent-soft), transparent 70%);
+  }
+  .hero-verdict { position: relative; }
+  .hero-verdict .band-word { font-size: 13px; }
+  .hero-verdict h2 { font-size: clamp(22px, 3vw, 30px); margin-top: 8px; max-width: 26ch; }
+  .hero-verdict p { color: var(--text-secondary); margin-top: 10px; max-width: 58ch; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px;
+    background: var(--surface-2); border: 1px solid var(--border); font-size: 13px; font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .chip .swatch { width: 8px; height: 8px; border-radius: 50%; }
+  .chip .val { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+
+  /* ---------- dial ---------- */
+  .dial { position: relative; border-radius: 50%; flex: none; }
+  .dial::after { content: ""; position: absolute; border-radius: 50%; background: var(--surface-1); }
+  .dial .ring-track { position: absolute; inset: 0; border-radius: 50%; }
+  .dial-face {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .dial-face .score { font-family: var(--font-display); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+  .dial-face .of100 { color: var(--text-muted); font-family: var(--font-body); font-weight: 600; }
+  .dial-face .band { font-family: var(--font-body); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .dial.lg { width: 172px; height: 172px; background: conic-gradient(from -135deg, var(--dial-color) 0deg var(--dial-deg), var(--surface-3) var(--dial-deg) 270deg, transparent 270deg 360deg); }
+  .dial.lg::after { inset: 14px; }
+  .dial.lg .score { font-size: 52px; }
+  .dial.lg .of100 { font-size: 13px; margin-top: -2px; }
+  .dial.lg .band { font-size: 12px; margin-top: 4px; color: var(--dial-color); }
+
+  .dial.sm { width: 108px; height: 108px; background: conic-gradient(from -135deg, var(--dial-color) 0deg var(--dial-deg), var(--surface-3) var(--dial-deg) 270deg, transparent 270deg 360deg); }
+  .dial.sm::after { inset: 10px; }
+  .dial.sm .score { font-size: 32px; }
+  .dial.sm .of100 { font-size: 10px; }
+  .dial.sm .band { font-size: 9.5px; margin-top: 2px; color: var(--dial-color); }
+
+  /* ---------- section heads ---------- */
+  .section { margin-top: 56px; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+  .section-head h2 { font-size: clamp(20px, 2.6vw, 26px); }
+  .section-head .hint { color: var(--text-muted); font-size: 13px; max-width: 40ch; }
+  .trail-rule { border: none; border-top: 1px dashed var(--border); margin: 56px 0 0; }
+
+  /* ---------- platform cards ---------- */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 22px;
+    display: flex; flex-direction: column; gap: 18px; transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .card-id { display: flex; align-items: center; gap: 12px; }
+  .badge {
+    width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center;
+    flex: none; background: var(--surface-2); border: 1px solid var(--border);
+  }
+  .badge svg { width: 21px; height: 21px; }
+  .card-id .names { display: flex; flex-direction: column; }
+  .card-id .platform { font-family: var(--font-display); font-weight: 800; font-size: 19px; letter-spacing: 0.2px; }
+  .card-id .handle { font-size: 12.5px; color: var(--text-muted); }
+  .card-id .handle a { color: var(--text-muted); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 2px; }
+  .card-id .handle a:hover { color: var(--accent-strong); text-decoration-color: var(--accent); }
+  .pill {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 10px;
+    border-radius: 999px; white-space: nowrap;
+  }
+
+  .card-body { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .stat-list { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 150px; }
+  .stat-row { display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; }
+  .stat-row .k { color: var(--text-muted); }
+  .stat-row .v { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .subscores { display: flex; flex-direction: column; gap: 10px; }
+  .subscore-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; }
+  .subscore-row .label { font-size: 12.5px; color: var(--text-secondary); }
+  .subscore-row .value { font-size: 12.5px; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; grid-row: 1; grid-column: 2; }
+  .bar-track { grid-column: 1 / -1; height: 6px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-strong)); }
+
+  .takeaway { font-size: 13.5px; color: var(--text-secondary); border-top: 1px solid var(--border); padding-top: 14px; }
+  .takeaway strong { color: var(--text-primary); }
+
+  /* ---------- recommendations ---------- */
+  .routes { list-style: none; margin: 0; padding: 0; counter-reset: route; display: flex; flex-direction: column; gap: 14px; }
+  .routes li {
+    counter-increment: route; position: relative; padding: 16px 18px 16px 54px; background: var(--surface-1);
+    border: 1px solid var(--border); border-radius: 12px; font-size: 14.5px; color: var(--text-secondary);
+  }
+  .routes li::before {
+    content: counter(route); position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    width: 26px; height: 26px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-strong);
+    font-family: var(--font-display); font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center;
+  }
+  .routes li strong { color: var(--text-primary); }
+  .routes li .priority { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+
+  /* ---------- methodology ---------- */
+  .method {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px;
+    font-size: 13.5px; color: var(--text-secondary);
+  }
+  .method h3 { font-size: 15px; font-family: var(--font-body); font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+  .method p + p { margin-top: 10px; }
+  .method code { background: var(--surface-3); padding: 1px 6px; border-radius: 4px; font-size: 12.5px; }
+
+  footer.foot { margin-top: 48px; text-align: center; color: var(--text-muted); font-size: 12.5px; }
+
+  @media (max-width: 620px) {
+    .hero { grid-template-columns: 1fr; text-align: left; }
+    .hero .dial.lg { margin: 0 auto; }
+    .card-body { flex-direction: column; align-items: stretch; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="brandline">
+      <svg class="compass" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <circle cx="20" cy="20" r="17" stroke="var(--accent)" stroke-width="2"/>
+        <path d="M20 9 L24 20 L20 31 L16 20 Z" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4" stroke-linejoin="round"/>
+        <circle cx="20" cy="20" r="2" fill="var(--accent)"/>
+      </svg>
+      <span class="eyebrow">Field Audit &middot; Social &amp; Web Health</span>
+    </div>
+    <h1 class="title">My Adventure Group's channels, scored the way a stranger actually finds them</h1>
+    <p class="subtitle">Four public-facing camps &mdash; Instagram, Facebook, LinkedIn and the website &mdash; scanned for what any prospect, journalist or event-booker sees without logging in. No private analytics, no API keys, just what's on the surface.</p>
+    <div class="meta-row">
+      <span>Subject: <strong style="color:var(--text-secondary)">myadventuregroup.com.au</strong></span>
+      <span class="dot"></span>
+      <span>4 channels scanned</span>
+      <span class="dot"></span>
+      <span>Captured 7 Aug 2026</span>
+      <span class="dot"></span>
+      <span>Public data only &mdash; see methodology</span>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Overall health score">
+    <div class="dial lg" style="--dial-color: var(--warning); --dial-deg: 183.6deg;">
+      <div class="dial-face">
+        <span class="score tabular">68</span>
+        <span class="of100">OUT OF 100</span>
+        <span class="band">Steady</span>
+      </div>
+    </div>
+    <div class="hero-verdict">
+      <span class="eyebrow band-word" style="color:var(--warning)">Composite verdict</span>
+      <h2>Solid basecamp, one exposed ridge.</h2>
+      <p>The website and Instagram are pulling their weight and doing real branding work. LinkedIn &mdash; the channel closest to the people who actually sign the corporate-retreat cheque &mdash; is the weak link on the whole route, and it's dragging the average down.</p>
+      <div class="chip-row">
+        <span class="chip"><span class="swatch" style="background:var(--good)"></span>Website <span class="val">84</span></span>
+        <span class="chip"><span class="swatch" style="background:var(--good)"></span>Instagram <span class="val">79</span></span>
+        <span class="chip"><span class="swatch" style="background:var(--warning)"></span>Facebook <span class="val">61</span></span>
+        <span class="chip"><span class="swatch" style="background:var(--critical)"></span>LinkedIn <span class="val">46</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Channel by channel</h2>
+      <span class="hint">Each score is an average of four sub-signals visible to any outside visitor.</span>
+    </div>
+
+    <div class="grid">
+
+      <!-- INSTAGRAM -->
+      <article class="card">
+        <div class="card-top">
+          <div class="card-id">
+            <span class="badge">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="var(--accent)" stroke-width="1.7"/><circle cx="12" cy="12" r="4.2" stroke="var(--accent)" stroke-width="1.7"/><circle cx="17.2" cy="6.8" r="1.1" fill="var(--accent)"/></svg>
+            </span>
+            <span class="names">
+              <span class="platform">Instagram</span>
+              <span class="handle"><a href="https://www.instagram.com/myadventuregroup/" target="_blank" rel="noopener">@myadventuregroup</a></span>
+            </span>
+          </div>
+          <span class="pill" style="background:var(--good-soft); color:var(--good)">Solid</span>
+        </div>
+        <div class="card-body">
+          <div class="dial sm" style="--dial-color: var(--good); --dial-deg: 213.3deg;">
+            <div class="dial-face">
+              <span class="score tabular">79</span>
+              <span class="of100">/100</span>
+            </div>
+          </div>
+          <div class="stat-list">
+            <div class="stat-row"><span class="k">Followers</span><span class="v">~1.8K</span></div>
+            <div class="stat-row"><span class="k">Following</span><span class="v">~910</span></div>
+            <div class="stat-row"><span class="k">Posts</span><span class="v">1,078</span></div>
+            <div class="stat-row"><span class="k">Story highlights</span><span class="v">10</span></div>
+          </div>
+        </div>
+        <div class="subscores">
+          <div class="subscore-row"><span class="label">Profile completeness</span><span class="value">92</span><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div></div>
+          <div class="subscore-row"><span class="label">Content activity</span><span class="value">85</span><div class="bar-track"><div class="bar-fill" style="width:85%"></div></div></div>
+          <div class="subscore-row"><span class="label">Follower&thinsp;:&thinsp;following quality</span><span class="value">82</span><div class="bar-track"><div class="bar-fill" style="width:82%"></div></div></div>
+          <div class="subscore-row"><span class="label">Audience size vs. stage reach</span><span class="value">58</span><div class="bar-track"><div class="bar-fill" style="width:58%"></div></div></div>
+        </div>
+        <p class="takeaway">Ten story-highlight categories and a sharp bio do real branding work, and posting is frequent. But <strong>~1.8K followers sits oddly next to a speaker who's addressed 980,000+ people live</strong> &mdash; the feed hasn't caught up to the stage yet.</p>
+      </article>
+
+      <!-- WEBSITE -->
+      <article class="card">
+        <div class="card-top">
+          <div class="card-id">
+            <span class="badge">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="var(--accent)" stroke-width="1.7"/><path d="M3 12h18M12 3c2.6 2.6 4 5.7 4 9s-1.4 6.4-4 9c-2.6-2.6-4-5.7-4-9s1.4-6.4 4-9Z" stroke="var(--accent)" stroke-width="1.5"/></svg>
+            </span>
+            <span class="names">
+              <span class="platform">Website</span>
+              <span class="handle"><a href="https://www.myadventuregroup.com.au/" target="_blank" rel="noopener">myadventuregroup.com.au</a></span>
+            </span>
+          </div>
+          <span class="pill" style="background:var(--good-soft); color:var(--good)">Solid</span>
+        </div>
+        <div class="card-body">
+          <div class="dial sm" style="--dial-color: var(--good); --dial-deg: 226.8deg;">
+            <div class="dial-face">
+              <span class="score tabular">84</span>
+              <span class="of100">/100</span>
+            </div>
+          </div>
+          <div class="stat-list">
+            <div class="stat-row"><span class="k">City landing pages</span><span class="v">6</span></div>
+            <div class="stat-row"><span class="k">Headline proof point</span><span class="v">980K / 40 countries</span></div>
+            <div class="stat-row"><span class="k">Socials linked</span><span class="v">4</span></div>
+          </div>
+        </div>
+        <div class="subscores">
+          <div class="subscore-row"><span class="label">Messaging &amp; brand clarity</span><span class="value">92</span><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div></div>
+          <div class="subscore-row"><span class="label">Local SEO footprint</span><span class="value">88</span><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div></div>
+          <div class="subscore-row"><span class="label">Conversion path clarity</span><span class="value">88</span><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div></div>
+          <div class="subscore-row"><span class="label">Social integration</span><span class="value">68</span><div class="bar-track"><div class="bar-fill" style="width:68%"></div></div></div>
+        </div>
+        <p class="takeaway">The strongest camp on the mountain &mdash; clear tagline, credibility stats and dedicated pages for six cities. One fixable snag: <strong>the site's LinkedIn icon links to James's personal profile, not the Company Page</strong>, quietly starving the score below.</p>
+      </article>
+
+      <!-- FACEBOOK -->
+      <article class="card">
+        <div class="card-top">
+          <div class="card-id">
+            <span class="badge">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 21v-7h2.4l.6-3H14v-1.9c0-.9.3-1.6 1.7-1.6H17V4.8c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.4-4 4.1V11H8v3h2.6v7h3.4Z" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="names">
+              <span class="platform">Facebook</span>
+              <span class="handle"><a href="https://www.facebook.com/MyAdventureGroup" target="_blank" rel="noopener">MyAdventureGroup</a></span>
+            </span>
+          </div>
+          <span class="pill" style="background:var(--warning-soft); color:var(--warning)">Steady</span>
+        </div>
+        <div class="card-body">
+          <div class="dial sm" style="--dial-color: var(--warning); --dial-deg: 164.7deg;">
+            <div class="dial-face">
+              <span class="score tabular">61</span>
+              <span class="of100">/100</span>
+            </div>
+          </div>
+          <div class="stat-list">
+            <div class="stat-row"><span class="k">Page likes</span><span class="v">~1.4K</span></div>
+            <div class="stat-row"><span class="k">Location tag</span><span class="v">Blackheath, NSW</span></div>
+          </div>
+        </div>
+        <div class="subscores">
+          <div class="subscore-row"><span class="label">Profile completeness</span><span class="value">75</span><div class="bar-track"><div class="bar-fill" style="width:75%"></div></div></div>
+          <div class="subscore-row"><span class="label">Engagement signal</span><span class="value">65</span><div class="bar-track"><div class="bar-fill" style="width:65%"></div></div></div>
+          <div class="subscore-row"><span class="label">Content activity</span><span class="value">55</span><div class="bar-track"><div class="bar-fill" style="width:55%"></div></div></div>
+          <div class="subscore-row"><span class="label">Audience size</span><span class="value">50</span><div class="bar-track"><div class="bar-fill" style="width:50%"></div></div></div>
+        </div>
+        <p class="takeaway">The page is alive and correctly geo-tagged, but <strong>posting cadence looks thin next to Instagram's</strong>. Facebook still skews toward the corporate-booker demographic &mdash; worth a cross-post habit rather than a bespoke content plan.</p>
+      </article>
+
+      <!-- LINKEDIN -->
+      <article class="card">
+        <div class="card-top">
+          <div class="card-id">
+            <span class="badge">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" stroke="var(--accent)" stroke-width="1.7"/><circle cx="8" cy="8.3" r="1.3" fill="var(--accent)"/><path d="M6.8 11v6.2M11 11v6.2M11 13.6c0-1.7 1.1-2.9 2.6-2.9 1.6 0 2.6 1.1 2.6 2.9v3.6" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </span>
+            <span class="names">
+              <span class="platform">LinkedIn</span>
+              <span class="handle"><a href="https://www.linkedin.com/company/myadventure-group/" target="_blank" rel="noopener">MyAdventure Group</a></span>
+            </span>
+          </div>
+          <span class="pill" style="background:var(--critical-soft); color:var(--critical)">At risk</span>
+        </div>
+        <div class="card-body">
+          <div class="dial sm" style="--dial-color: var(--critical); --dial-deg: 124.2deg;">
+            <div class="dial-face">
+              <span class="score tabular">46</span>
+              <span class="of100">/100</span>
+            </div>
+          </div>
+          <div class="stat-list">
+            <div class="stat-row"><span class="k">Followers</span><span class="v">~305</span></div>
+            <div class="stat-row"><span class="k">Industry</span><span class="v">Prof. Training</span></div>
+          </div>
+        </div>
+        <div class="subscores">
+          <div class="subscore-row"><span class="label">Profile completeness</span><span class="value">70</span><div class="bar-track"><div class="bar-fill" style="width:70%"></div></div></div>
+          <div class="subscore-row"><span class="label">Team visibility</span><span class="value">45</span><div class="bar-track"><div class="bar-fill" style="width:45%"></div></div></div>
+          <div class="subscore-row"><span class="label">Content activity</span><span class="value">40</span><div class="bar-track"><div class="bar-fill" style="width:40%"></div></div></div>
+          <div class="subscore-row"><span class="label">Audience size</span><span class="value">28</span><div class="bar-track"><div class="bar-fill" style="width:28%"></div></div></div>
+        </div>
+        <p class="takeaway">The odd one out. LinkedIn is where HR leads and L&amp;D budget-holders actually spend time, and it's <strong>the weakest camp on the whole route</strong> &mdash; 305 followers is a rounding error next to the corporate-retreat pitch this business runs on.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <hr class="trail-rule" />
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Route notes</h2>
+      <span class="hint">In priority order &mdash; highest-leverage move first.</span>
+    </div>
+    <ol class="routes">
+      <li><span class="priority" style="color:var(--critical)">Highest leverage</span>Rebuild the <strong>LinkedIn</strong> camp deliberately: post 2&ndash;3&times;/week, have James engage from his personal profile, and ask five past corporate clients to follow and comment. It's the lowest score sitting in front of the highest-value audience.</li>
+      <li><span class="priority" style="color:var(--warning)">Quick fix</span>Repoint the <strong>website's LinkedIn icon</strong> from James's personal profile to the Company Page &mdash; every visitor who clicks it today is a follower the Page score above never sees.</li>
+      <li><span class="priority" style="color:var(--warning)">Low effort</span>Give <strong>Facebook</strong> a standing cross-post habit from Instagram. It won't close the gap alone, but it stops the page from going quiet between keynotes.</li>
+      <li><span class="priority" style="color:var(--good)">Compounding</span>Turn stage reach into feed reach: a single call-to-action at the end of each keynote pointing to <strong>Instagram</strong> could move the needle on ~1.8K followers faster than any content tweak.</li>
+    </ol>
+  </section>
+
+  <section class="section">
+    <div class="method">
+      <h3>How this was scored</h3>
+      <p>Every score above is built only from what's visible to a logged-out visitor as of <strong style="color:var(--text-primary)">7 August 2026</strong>: bio text, story highlights, follower/following counts, visible posting cadence, page metadata and website structure. Nothing here uses a connected API or the account owner's private dashboards.</p>
+      <p>That means it deliberately leaves out reach, impressions, saves, click-through and audience demographics &mdash; the numbers that live inside <code>Meta Business Suite</code>, <code>LinkedIn Page Analytics</code> and the site's own analytics tool. Those are the real next step: plug them in and every score here gets sharper.</p>
+      <p>Follower counts fluctuate and different sources (a profile page vs. a search index) can disagree by small margins &mdash; treat the numbers above as directional (“~1.8K”, not a live counter), not a live feed.</p>
+    </div>
+  </section>
+
+  <footer class="foot">Field audit compiled 7 August 2026 &middot; for My Adventure Group &middot; myadventuregroup.com.au</footer>
+
+</div>

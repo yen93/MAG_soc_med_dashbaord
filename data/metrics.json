@@ -16,9 +16,20 @@
         "_comment": "Real: followers, bioFilled, linkInBio (direct fetch of the public profile, 2026-08-07). Everything else scoring.js can use for Instagram — posting cadence, per-post likes/comments, video mix, hashtag strategy, comment reply rate, profile pic/category flags, prior-period followers — lives only in Instagram Insights (owner login) or would require scraping a representative sample of recent posts, which isn't possible logged-out: the public profile page exposes no list of recent post URLs, only a single post's stats if you already know its exact URL. See update_logs/070826_2.txt for exactly what to pull from Insights.",
         "followers": 1880,
         "bioFilled": true,
-        "linkInBio": true
+        "linkInBio": true,
+        "followerLog": [
+          {
+            "date": "2026-08-07",
+            "count": 1880
+          }
+        ]
       },
-      "history": [{ "date": "2026-08-07", "score": 100 }]
+      "history": [
+        {
+          "date": "2026-08-07",
+          "score": 100
+        }
+      ]
     },
     "website": {
       "platform": "Website",
@@ -36,7 +47,12 @@
         "titleTagsPresentPct": 100,
         "altTextCoveragePct": 35
       },
-      "history": [{ "date": "2026-08-07", "score": 86 }]
+      "history": [
+        {
+          "date": "2026-08-07",
+          "score": 86
+        }
+      ]
     },
     "facebook": {
       "platform": "Facebook",
@@ -45,7 +61,13 @@
       "lastUpdated": "2026-08-07",
       "raw": {
         "_comment": "Real: followers is Facebook's public 'Page likes' count (1,432 — Facebook doesn't expose a separate follower figure in public metadata; using likes as the engagement-rate denominator, per direct fetch 2026-08-07). Everything else is confirmed blocked, not just unchecked: /reviews is a hard login wall (no rating data at all), /about exposes only a locality string (no clean category, contact info, or hours), and no post content or timestamps are visible logged-out anywhere on the Page, so posting cadence and per-post reactions/comments/shares can't be sampled the way they can on Instagram. All of these need Meta Business Suite (Facebook Page Insights) — see update_logs/070826_2.txt.",
-        "followers": 1432
+        "followers": 1432,
+        "followerLog": [
+          {
+            "date": "2026-08-07",
+            "count": 1432
+          }
+        ]
       },
       "history": []
     },
@@ -59,9 +81,20 @@
         "followers": 446,
         "aboutFilled": true,
         "industrySet": true,
-        "bannerLogoSet": true
+        "bannerLogoSet": true,
+        "followerLog": [
+          {
+            "date": "2026-08-07",
+            "count": 446
+          }
+        ]
       },
-      "history": [{ "date": "2026-08-07", "score": 100 }]
+      "history": [
+        {
+          "date": "2026-08-07",
+          "score": 100
+        }
+      ]
     }
   }
 }
