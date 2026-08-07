@@ -2,122 +2,66 @@
   "meta": {
     "brand": "My Adventure Group",
     "dashboardTitle": "MAG Social Health Score",
-    "isPlaceholderData": true,
-    "placeholderNote": "All numbers below are realistic PLACEHOLDER values for first-run testing. Replace every field under each channel's \"raw\" object with real numbers pulled from that platform's own analytics/insights, then update \"lastUpdated\" and append a new entry to \"history\"."
+    "isPlaceholderData": false,
+    "dataAsOf": "2026-08-07",
+    "dataNote": "Every field below is either (a) a real, publicly-verified value as of 2026-08-07 with its source named in that channel's _comment, or (b) simply absent because it lives inside that platform's private analytics (Instagram/Facebook/LinkedIn Insights) or a paid Lighthouse run, which no logged-out fetch can reach. Absent fields are NOT null placeholders — scoring.js already renormalizes around missing inputs, so a category with no real input correctly shows 'No Data' instead of a guessed number. Full source list and exactly what to paste in next (and from where) is in update_logs/070826_2.txt."
   },
   "channels": {
     "instagram": {
       "platform": "Instagram",
       "handle": "@myadventuregroup",
       "url": "https://www.instagram.com/myadventuregroup/",
-      "lastUpdated": "2026-08-01",
+      "lastUpdated": "2026-08-07",
       "raw": {
-        "_comment": "PLACEHOLDER — replace with real numbers from Instagram Insights",
-        "followers": 4820,
-        "followersPrevPeriod": 4650,
-        "avgLikesPerPost": 68,
-        "avgCommentsPerPost": 5,
-        "postsLast30Days": 7,
-        "videoPostsLast30Days": 3,
+        "_comment": "Real: followers, bioFilled, linkInBio (direct fetch of the public profile, 2026-08-07). Everything else scoring.js can use for Instagram — posting cadence, per-post likes/comments, video mix, hashtag strategy, comment reply rate, profile pic/category flags, prior-period followers — lives only in Instagram Insights (owner login) or would require scraping a representative sample of recent posts, which isn't possible logged-out: the public profile page exposes no list of recent post URLs, only a single post's stats if you already know its exact URL. See update_logs/070826_2.txt for exactly what to pull from Insights.",
+        "followers": 1880,
         "bioFilled": true,
-        "linkInBio": true,
-        "profilePicSet": true,
-        "categorySet": true,
-        "visualConsistencyScore": 70,
-        "commentReplyRatePct": 45,
-        "hashtagsAvgPerPost": 9,
-        "hashtagStrategyScore": 55
+        "linkInBio": true
       },
-      "history": [
-        { "date": "2026-03-01", "score": 57 },
-        { "date": "2026-04-01", "score": 59 },
-        { "date": "2026-05-01", "score": 61 },
-        { "date": "2026-06-01", "score": 62 },
-        { "date": "2026-07-01", "score": 64 },
-        { "date": "2026-08-01", "score": 65 }
-      ]
+      "history": [{ "date": "2026-08-07", "score": 100 }]
     },
     "website": {
       "platform": "Website",
       "handle": "myadventuregroup.com.au",
       "url": "https://www.myadventuregroup.com.au/",
-      "lastUpdated": "2026-08-01",
+      "lastUpdated": "2026-08-07",
       "raw": {
-        "_comment": "PLACEHOLDER — replace with real numbers from PageSpeed/Lighthouse + a manual site audit",
-        "performanceScore": 78,
-        "titleTagsPresentPct": 85,
-        "altTextCoveragePct": 60,
+        "_comment": "Real, verified by direct fetch of the live site on 2026-08-07: mobileFriendly (viewport meta tag), lastContentUpdateDate (latest /blog/ post), bookingPathClicks (homepage -> 'Book a Free Call With Cas' -> 200 OK, 1 click), testimonialsVisible/mediaLogosVisible/caseStudiesVisible (checked homepage HTML directly), titleTagsPresentPct/altTextCoveragePct (sampled 5 real pages: home, /blog/, /contact/, /free-consult/, /speaking-request/ — 5/5 have a unique <title>; 34 of 98 <img> tags have alt text). performanceScore is omitted: the public PageSpeed Insights API returned a quota-exceeded error both times it was tried today — run https://pagespeed.web.dev/analysis?url=https://www.myadventuregroup.com.au/ manually and give me the mobile performance score to add it. ctaClarityScore is omitted on purpose — it's a subjective UX judgment, not a scrapeable fact.",
         "mobileFriendly": true,
-        "lastContentUpdateDate": "2026-05-20",
-        "ctaClarityScore": 72,
-        "bookingPathClicks": 2,
+        "lastContentUpdateDate": "2026-07-20",
+        "bookingPathClicks": 1,
         "testimonialsVisible": true,
         "mediaLogosVisible": true,
-        "caseStudiesVisible": false
+        "caseStudiesVisible": false,
+        "titleTagsPresentPct": 100,
+        "altTextCoveragePct": 35
       },
-      "history": [
-        { "date": "2026-03-01", "score": 66 },
-        { "date": "2026-04-01", "score": 67 },
-        { "date": "2026-05-01", "score": 69 },
-        { "date": "2026-06-01", "score": 70 },
-        { "date": "2026-07-01", "score": 71 },
-        { "date": "2026-08-01", "score": 72 }
-      ]
+      "history": [{ "date": "2026-08-07", "score": 86 }]
     },
     "facebook": {
       "platform": "Facebook",
       "handle": "MyAdventureGroup",
       "url": "https://www.facebook.com/MyAdventureGroup",
-      "lastUpdated": "2026-08-01",
+      "lastUpdated": "2026-08-07",
       "raw": {
-        "_comment": "PLACEHOLDER — replace with real numbers from Facebook Page Insights",
-        "followers": 3100,
-        "followersPrevPeriod": 3050,
-        "aboutFilled": true,
-        "contactInfoFilled": true,
-        "hoursSetIfRelevant": null,
-        "postsLast30Days": 4,
-        "avgReactionsPerPost": 18,
-        "avgCommentsPerPost": 2,
-        "avgSharesPerPost": 1,
-        "reviewsEnabled": true,
-        "ratingOutOf5": 4.6,
-        "responseRatePct": 80
+        "_comment": "Real: followers is Facebook's public 'Page likes' count (1,432 — Facebook doesn't expose a separate follower figure in public metadata; using likes as the engagement-rate denominator, per direct fetch 2026-08-07). Everything else is confirmed blocked, not just unchecked: /reviews is a hard login wall (no rating data at all), /about exposes only a locality string (no clean category, contact info, or hours), and no post content or timestamps are visible logged-out anywhere on the Page, so posting cadence and per-post reactions/comments/shares can't be sampled the way they can on Instagram. All of these need Meta Business Suite (Facebook Page Insights) — see update_logs/070826_2.txt.",
+        "followers": 1432
       },
-      "history": [
-        { "date": "2026-03-01", "score": 52 },
-        { "date": "2026-04-01", "score": 53 },
-        { "date": "2026-05-01", "score": 55 },
-        { "date": "2026-06-01", "score": 54 },
-        { "date": "2026-07-01", "score": 56 },
-        { "date": "2026-08-01", "score": 57 }
-      ]
+      "history": []
     },
     "linkedin": {
       "platform": "LinkedIn",
       "handle": "myadventure-group",
       "url": "https://www.linkedin.com/company/myadventure-group/posts/?feedView=all",
-      "lastUpdated": "2026-08-01",
+      "lastUpdated": "2026-08-07",
       "raw": {
-        "_comment": "PLACEHOLDER — replace with real numbers from LinkedIn Page analytics",
-        "followers": 2600,
-        "followersPrevPeriod": 2400,
+        "_comment": "Real, verified by direct fetch of the Company Page on 2026-08-07: followers, aboutFilled (real About text present), industrySet (industry: 'Events Services'), bannerLogoSet (a real logo image is set, confirmed via og:image). Posting cadence, per-post reactions/comments, and prior-period followers (for growth) aren't visible on a logged-out fetch at all — no post content appears in the public page source — so those need LinkedIn's own Page analytics (owner login). See update_logs/070826_2.txt.",
+        "followers": 446,
         "aboutFilled": true,
         "industrySet": true,
-        "bannerLogoSet": true,
-        "postsLast30Days": 6,
-        "avgReactionsPerPost": 32,
-        "avgCommentsPerPost": 3,
-        "contentRelevanceScore": 65
+        "bannerLogoSet": true
       },
-      "history": [
-        { "date": "2026-03-01", "score": 60 },
-        { "date": "2026-04-01", "score": 62 },
-        { "date": "2026-05-01", "score": 63 },
-        { "date": "2026-06-01", "score": 65 },
-        { "date": "2026-07-01", "score": 67 },
-        { "date": "2026-08-01", "score": 69 }
-      ]
+      "history": [{ "date": "2026-08-07", "score": 100 }]
     }
   }
 }

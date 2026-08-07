@@ -51,15 +51,35 @@ js/scoring.js           Pure scoring engine, no DOM/IO. Exports:
                          lowest-scoring categories, using per-category
                          template strings that interpolate real numbers from
                          metrics.json (e.g. "Posting cadence is light (4
-                         posts in 30 days)...").
+                         posts in 30 days)..."). The three engagement-rate
+                         formulas (Instagram/Facebook/LinkedIn) were fixed
+                         2026-08-07: they used to default missing per-post
+                         metrics to 0 inside the numerator while gating only
+                         on "followers" being present, so a real follower
+                         count with no engagement data produced a false,
+                         confident "0% engagement / At Risk" instead of "No
+                         Data". They now also require at least one real
+                         engagement-volume field before computing a rate.
 
 data/metrics.json       Raw input data, hand-maintained. One object per
                          channel: {platform, handle, url, lastUpdated,
                          raw: {...channel-specific fields...}, history: [
-                         {date, score}, ...]}. meta.isPlaceholderData is
-                         currently TRUE — every raw value in this file is a
-                         realistic placeholder for first-run testing, not a
-                         real pull from Instagram/Meta/LinkedIn analytics.
+                         {date, score}, ...]}. meta.isPlaceholderData is now
+                         FALSE: every field present under a channel's "raw"
+                         is a real, sourced value verified 2026-08-07 (see
+                         each channel's "_comment" and
+                         update_logs/070826_2.txt for exact sources).
+                         Fields that only exist inside a platform's private
+                         analytics (Instagram/Facebook/LinkedIn Insights) or
+                         a paid Lighthouse run are simply ABSENT from
+                         "raw" rather than null placeholders — scoring.js's
+                         weightedAverage() already renormalizes around
+                         missing inputs, so this degrades a category to
+                         "No Data" correctly. "history" was reset from a
+                         fabricated 6-month trend to one real entry per
+                         channel (Facebook has none yet, since it has no
+                         scored categories at all) — sparklines/trend chips
+                         stay hidden until a second real snapshot exists.
 
 js/app.js                Entry point loaded by index.html. Drives the
                          #scan-overlay step animation (respects
@@ -78,7 +98,13 @@ js/app.js                Entry point loaded by index.html. Drives the
                          classes (stroke-excellent, cat-fill.good, etc.) are
                          derived from gradeFor()'s className so channel
                          cards and category bars use the same 4-band
-                         color language as the hero score.
+                         color language as the hero score. Also renders a
+                         "N of 5 categories scored" coverage chip next to
+                         every grade badge (hero + each channel card, via
+                         coverageFor()/aggregateCoverage()) — added
+                         2026-08-07 once real (partial) data made it clear a
+                         grade built from 1 of 5 categories could otherwise
+                         look identical to a fully-measured "Excellent".
 
 package.json             { "type": "module" } only, so Node treats
                          js/scoring.js as an ES module for local testing.
@@ -131,15 +157,15 @@ over http(s) — opening index.html directly via file:// will not load the
 module script in most browsers. From this folder:
   npx serve .        (or any other static file server)
 then open the printed localhost URL.
-NOTE: this will currently show the scan overlay indefinitely and never
-render the dashboard — see Known Issues, item 1.
 
-To point the dashboard at real numbers: replace every field under each
-channel's "raw" object in data/metrics.json with the real value from that
-platform's own analytics (Instagram Insights, Facebook Page Insights,
-LinkedIn Page analytics, PageSpeed/Lighthouse + manual audit for the
-website), update "lastUpdated", and append a new {date, score} entry to
-"history".
+To complete the real-data picture: add the fields currently absent from
+each channel's "raw" object in data/metrics.json, pulled from that
+platform's own analytics — see update_logs/070826_2.txt for the exact
+per-field checklist (what's missing, and where in Instagram Insights /
+Meta Business Suite / LinkedIn Page analytics / a manual PageSpeed run to
+find each one). Then update "lastUpdated" and append a new {date, score}
+entry to "history" so the sparkline/trend chip has a second real point to
+compare against.
 
 --------------------------------------------------------------------------------
 5. KNOWN ISSUES / GAPS (as found 2026-08-07, updated same day once js/app.js
@@ -153,8 +179,16 @@ website), update "lastUpdated", and append a new {date, score} entry to
    pass: page loads -> scan overlay animates -> Skip button dismisses it on
    click -> hero + all 4 channel cards render with real category bars,
    summaries, recommendations and sparklines -> zero console/page errors.
-2. data/metrics.json is entirely placeholder data (meta.isPlaceholderData:
-   true) — none of the numbers are pulled from real analytics yet.
+2. [RESOLVED 2026-08-07] data/metrics.json was entirely placeholder data.
+   Replaced with real, sourced values where publicly verifiable; unscoreable
+   fields are absent rather than faked (see section 2 above and
+   update_logs/070826_2.txt). Residual gap: most channels are still
+   low-coverage — e.g. Instagram and LinkedIn each currently have only 1 of
+   5 categories scored (their "Excellent" grades reflect that one category,
+   not full-channel health) — now visibly flagged in the UI by the coverage
+   chip rather than hidden. Facebook has 0 of 5 categories scored (correctly
+   shows "No Data"). Completing this requires the account owner pulling
+   numbers from each platform's private analytics.
 3. No automated tests exist for the scoring functions in js/scoring.js,
    despite them being pure and straightforward to unit test. (js/app.js's
    rendering logic was verified manually via a headless-browser pass rather

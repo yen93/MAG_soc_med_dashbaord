@@ -1,0 +1,193 @@
+================================================================================
+UPDATE LOG — 07/08/26 (#2)
+Conversation window summary: replacing placeholder metrics with real data
+================================================================================
+
+REQUEST
+-------
+"Please make the metrics real." Follow-up to 070826_1.txt's work: the
+dashboard (index.html + js/scoring.js + js/app.js) was fully built and
+rendering, but data/metrics.json was 100% synthetic placeholder data.
+
+APPROACH
+--------
+Went through Claude Code's plan mode for this one, since a large share of
+the schema scoring.js expects (per-post engagement, posting cadence, review
+ratings, response rate, follower-growth deltas) turned out to live only
+inside each platform's private analytics — Instagram/Facebook/LinkedIn
+Insights — or a paid Lighthouse run, none of which a logged-out fetch can
+reach. Asked the user how to handle that gap; their call: remove those
+fields from each channel's "raw" object entirely rather than writing them
+as null placeholders (scoring.js already treats a missing key the same as
+null/undefined, so this is functionally identical, just a cleaner file).
+
+RESEARCH — WHAT'S REAL NOW (sourced 2026-08-07)
+------------------------------------------------
+Instagram (instagram.com/myadventuregroup):
+  - followers: 1,880 — mobile-Safari-UA curl of the profile, og:description
+    meta tag (most reliable of 3 fetch methods tried; desktop-UA curl and
+    the WebFetch tool both got inconsistent/bot-blocked results)
+  - bioFilled: true, linkInBio: true — bio + website link confirmed present
+
+Website (myadventuregroup.com.au):
+  - mobileFriendly: true — viewport meta tag present
+  - lastContentUpdateDate: 2026-07-20 — real /blog/ post date (blog posts
+    roughly monthly back through 2025-09-26, confirmed by date-grepping raw
+    HTML directly, not AI-summarized)
+  - bookingPathClicks: 1 — homepage's "Book a Free Call With Cas" CTA links
+    straight to /free-consult/ (HTTP 200, verified via curl status check)
+  - testimonialsVisible: true — 5+ real testimonial blocks with names
+    (e.g. Lisa Wilkinson) found in raw HTML
+  - mediaLogosVisible: true — real media (60 Minutes, ABC News, CNN,
+    National Geographic, etc.) and corporate client (IBM, Oracle, Deloitte,
+    Commonwealth Bank, etc.) logo filenames found in raw HTML
+  - caseStudiesVisible: false — confirmed absent (no "case stud*" text)
+  - titleTagsPresentPct: 100, altTextCoveragePct: 35 — sampled 5 real pages
+    (home, /blog/, /contact/, /free-consult/, /speaking-request/): 5/5 have
+    a unique <title>; 34 of 98 total <img> tags carry alt text
+  - Confirmed (context only, not scored): the site's only LinkedIn link
+    still points to James's personal profile, not the Company Page —
+    independently re-verified, matches the earlier Artifact's finding.
+
+Facebook (facebook.com/MyAdventureGroup):
+  - followers: 1,432 — this is Facebook's public "Page likes" count (no
+    separate follower figure exists in public metadata); documented in the
+    file as a substitution.
+  - Everything else CONFIRMED blocked, not just unchecked: /reviews is a
+    hard login wall (no rating data at all); /about exposes only a
+    locality string ("Blackheath NSW"), no clean category/hours/contact
+    info; no post content or timestamps are visible logged-out anywhere.
+
+LinkedIn (linkedin.com/company/myadventure-group):
+  - followers: 446, industrySet: true (industry: "Events Services"),
+    aboutFilled: true (real About text), bannerLogoSet: true (real logo
+    image confirmed via og:image / JSON-LD "logo" field) — all via direct
+    curl of the Company Page, which (unlike an earlier attempt this
+    session with a different fetch method) did NOT hit a hard login wall
+    for these public SEO fields.
+  - Posting cadence / per-post reactions & comments / follower-growth
+    history: not obtainable logged-out — no post data appears anywhere in
+    the public page source.
+
+DEAD END WORTH RECORDING
+--------------------------
+Tried to build a real average engagement number for Instagram by sampling
+~10-15 recent posts (same mobile-UA technique that reads a known post's
+like/comment count from its og:description). This doesn't work: the
+logged-out mobile profile page contains no shortcode list / recent-post
+JSON at all, and WebSearch doesn't index individual posts for this account
+either. The only 2 known post URLs on hand were ~2-year-old reels from an
+earlier, unrelated search — explicitly decided NOT to build an "average"
+out of 2 stale posts and call it real. Result: avgLikesPerPost,
+avgCommentsPerPost, postsLast30Days, videoPostsLast30Days, and
+hashtagsAvgPerPost are absent from Instagram's raw{}, not estimated.
+
+Also tried the public Google PageSpeed Insights API twice (start of session
+and again after the further-research pass) for a real website performance
+score — both times it returned HTTP 429, "Quota exceeded... limit 0" (the
+anonymous daily quota for this environment is fully exhausted, not
+partially used). performanceScore is absent; see "What's still needed"
+below for how to add it manually.
+
+BUG FOUND AND FIXED (js/scoring.js)
+--------------------------------------
+Once real-but-partial data started flowing through the engine, a latent bug
+surfaced: scoreInstagram/scoreFacebook/scoreLinkedin's engagement-rate
+calculations gated only on `isNum(raw.followers)`, then defaulted every
+missing per-post metric to 0 *inside* the numerator via `?? 0`. Concretely:
+a real follower count with no per-post engagement data produced a
+confidently wrong "0% engagement rate -> At Risk" instead of "No Data" —
+worse than the placeholder data it was replacing, since it looks like a
+real, bad measurement rather than an absent one. Fixed by requiring at
+least one real engagement-volume field (avgLikesPerPost/avgCommentsPerPost
+for Instagram & LinkedIn; also avgSharesPerPost for Facebook) before
+computing a rate at all; otherwise the category now correctly resolves to
+null / "No Data". This is the only change made to scoring.js's formulas —
+weights and benchmarks are untouched.
+
+A SECOND ISSUE THIS SURFACED (fixed in js/app.js, not scoring.js)
+---------------------------------------------------------------------
+Running the real, sparse data through computeAllScores() showed something
+the scoring model's weight-renormalization design doesn't protect against:
+a channel with only 1 of 5 categories scored can land on "100/100,
+Excellent" — indistinguishable in the UI from a channel that's fully
+measured and genuinely excellent. (Instagram and LinkedIn both hit this:
+each currently has only "profile/page completeness" filled in, both scored
+100, so both show "Excellent" today with 4 of 5 categories blank.) Asked
+the user how to handle it; chose to add a coverage indicator rather than
+change the scoring formula. js/app.js now renders a "N of 5 categories
+scored" chip next to every grade badge (hero score aggregates across all 4
+channels: today that's "6 of 20 categories scored") via two new helpers,
+coverageFor() and aggregateCoverage(). The underlying scores/grades are
+unchanged — this only adds visible context so a sparse "Excellent" is never
+mistaken for a comprehensive one.
+
+RESULTING SCORES (2026-08-07, for reference — will shift as real fields
+are added)
+---------------------------------------------------------------------------
+  MAG Overall: 95, Excellent (6 of 20 categories scored)
+  Instagram:   100, Excellent (1 of 5 — Profile Completeness only)
+  Website:      86, Good      (4 of 5 — Performance still missing)
+  Facebook:    No Data         (0 of 5)
+  LinkedIn:    100, Excellent (1 of 5 — Company Page Completeness only)
+
+WHAT'S STILL NEEDED (manual — only the account owner can pull these)
+------------------------------------------------------------------------
+Instagram (from the Instagram app -> the account -> Insights):
+  - Posts in the last 30 days, and how many were video/Reels
+  - Average likes + comments per post (drives Engagement)
+  - Comment reply rate %
+  - Average hashtags per post
+  - Follower count from ~30 days ago (drives Growth)
+  - Whether a business category is set on the profile (Edit Profile)
+
+Facebook (from Meta Business Suite -> Page Insights):
+  - About section completeness, contact info, hours (if relevant)
+  - Posts in the last 30 days
+  - Average reactions/comments/shares per post
+  - Whether Reviews are enabled and the star rating, if so
+  - Message response rate %
+
+LinkedIn (from the Company Page's own analytics, admin view):
+  - Posts in the last 30 days
+  - Average reactions + comments per post
+  - Follower count from ~30 days ago (drives Follower Growth)
+  - A 0-100 content-relevance judgment (thought-leadership vs. promotional
+    mix) — this one is inherently a judgment call, not a pure metric
+
+Website:
+  - A real mobile performance score — run
+    https://pagespeed.web.dev/analysis?url=https://www.myadventuregroup.com.au/
+    manually (the free API quota used by this session is exhausted) and
+    hand me the number
+  - ctaClarityScore was intentionally left out of the file — it's a
+    subjective UX judgment; supply a number only if you want one specific
+    reviewer's opinion baked into the score
+
+Once any of the above is added to data/metrics.json, update that channel's
+"lastUpdated" and append one more {date, score} entry to "history" so the
+sparkline/trend chip has a second real point to work from (both currently
+render nothing per channel, correctly, since app.js only draws a trend from
+2+ real snapshots).
+
+FILES CHANGED THIS TURN
+--------------------------
+  data/metrics.json         — full rewrite, real-sourced fields only
+  js/scoring.js             — engagement-rate false-zero fix (3 functions)
+  js/app.js                 — added coverageFor()/aggregateCoverage()/
+                               coverageLabel() + the coverage chip markup
+  update_logs/as_built.txt  — corrected to describe the new real/omitted
+                               data state, the scoring fix, and the
+                               coverage chip
+  update_logs/070826_2.txt  — this file
+
+VERIFICATION
+------------
+- node --check on both js/scoring.js and js/app.js after edits
+- node -e importing computeAllScores() directly against the new
+  metrics.json to confirm: no false zeroes, correct nulls, sane real scores
+- Re-ran this session's headless-Playwright driver against the served app:
+  scan overlay -> Skip -> dashboard renders, coverage chips visible and
+  correct ("6 OF 20", "1 OF 5" x2, "0 OF 5"), Facebook's ring correctly
+  empty/gray "No Data", zero console/page errors — screenshot reviewed
+================================================================================

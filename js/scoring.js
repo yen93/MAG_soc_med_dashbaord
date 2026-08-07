@@ -245,8 +245,9 @@ function scoreInstagram(raw = {}) {
     ])
   );
 
+  const hasEngagementVolume = isNum(raw.avgLikesPerPost) || isNum(raw.avgCommentsPerPost);
   const engagementRatePct =
-    isNum(raw.followers) && raw.followers > 0
+    isNum(raw.followers) && raw.followers > 0 && hasEngagementVolume
       ? (((raw.avgLikesPerPost ?? 0) + (raw.avgCommentsPerPost ?? 0)) / raw.followers) * 100
       : null;
   const engagementRateScore = rateScore(engagementRatePct, BENCHMARKS.instagram.engagementRatePctTarget);
@@ -321,8 +322,9 @@ function scoreFacebook(raw = {}) {
 
   const postingConsistency = rateScore(raw.postsLast30Days, BENCHMARKS.facebook.postsPerMonthTarget);
 
+  const hasEngagementVolume = isNum(raw.avgReactionsPerPost) || isNum(raw.avgCommentsPerPost) || isNum(raw.avgSharesPerPost);
   const engagementRatePct =
-    isNum(raw.followers) && raw.followers > 0
+    isNum(raw.followers) && raw.followers > 0 && hasEngagementVolume
       ? (((raw.avgReactionsPerPost ?? 0) + (raw.avgCommentsPerPost ?? 0) + (raw.avgSharesPerPost ?? 0)) / raw.followers) * 100
       : null;
   const engagementRate = rateScore(engagementRatePct, BENCHMARKS.facebook.engagementRatePctTarget);
@@ -348,8 +350,9 @@ function scoreLinkedin(raw = {}) {
 
   const postingConsistency = rateScore(raw.postsLast30Days, BENCHMARKS.linkedin.postsPerMonthTarget);
 
+  const hasEngagementVolume = isNum(raw.avgReactionsPerPost) || isNum(raw.avgCommentsPerPost);
   const engagementRatePct =
-    isNum(raw.followers) && raw.followers > 0
+    isNum(raw.followers) && raw.followers > 0 && hasEngagementVolume
       ? (((raw.avgReactionsPerPost ?? 0) + (raw.avgCommentsPerPost ?? 0)) / raw.followers) * 100
       : null;
   const engagementRate = rateScore(engagementRatePct, BENCHMARKS.linkedin.engagementRatePctTarget);

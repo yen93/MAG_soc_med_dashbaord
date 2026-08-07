@@ -153,11 +153,13 @@ function renderHeader(metrics, asOf) {
 
 function renderHero(result) {
   const { magOverall, magGrade } = result;
+  const cov = aggregateCoverage(result.channels);
   return `
     <section class="hero">
       <div class="hero-gauge-wrap">
         ${gaugeSVG({ size: 160, strokeWidth: 14, score: magOverall, grade: magGrade })}
         <span class="grade-badge ${magGrade.className}">${escapeHtml(magGrade.label)}</span>
+        <span class="sparkline-label">${escapeHtml(coverageLabel(cov))}</span>
       </div>
       <div class="hero-copy">
         <h1>MAG Social Health Score</h1>
@@ -195,6 +197,7 @@ function renderChannelCard(channel) {
         ${gaugeSVG({ size: 92, strokeWidth: 9, score: channel.overall, grade: channel.grade })}
         <div class="grade-stack">
           <span class="grade-badge ${channel.grade.className}">${escapeHtml(channel.grade.label)}</span>
+          <span class="sparkline-label">${escapeHtml(coverageLabel(coverageFor(channel.categories)))}</span>
           ${trend ? `<span class="sparkline-label">${escapeHtml(trend)}</span>` : ""}
         </div>
       </div>
@@ -333,6 +336,32 @@ function animateGauges(root) {
 // ---------------------------------------------------------------------------
 // Small helpers
 // ---------------------------------------------------------------------------
+
+/**
+ * How many of a channel's categories have a real score vs. how many exist
+ * in the model. Surfaced as a chip next to every grade badge so a grade
+ * built from 1 of 5 categories is never visually indistinguishable from
+ * one built from a fully-measured channel.
+ */
+function coverageFor(categories) {
+  const total = categories.length;
+  const scored = categories.filter((c) => typeof c.score === "number").length;
+  return { scored, total };
+}
+
+function aggregateCoverage(channels) {
+  return Object.values(channels).reduce(
+    (acc, ch) => {
+      const c = coverageFor(ch.categories);
+      return { scored: acc.scored + c.scored, total: acc.total + c.total };
+    },
+    { scored: 0, total: 0 }
+  );
+}
+
+function coverageLabel({ scored, total }) {
+  return `${scored} of ${total} categories scored`;
+}
 
 function slugFromClassName(className) {
   return String(className).replace(/^grade-/, "");
